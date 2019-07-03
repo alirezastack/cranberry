@@ -1,0 +1,13 @@
+version: "3"
+services:
+    cranberry:
+        image: "cranberry:dev"
+        build:
+            context: .
+            dockerfile: Dockerfile
+        hostname: cranberry
+        stdin_open: true
+        tty: true
+        working_dir: '/cranberry-dev'
+        volumes:
+            - ".:/cranberry-dev"

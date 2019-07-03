@@ -1,0 +1,6 @@
+recursive-include *.py
+include setup.cfg
+include README.md CHANGELOG.md LICENSE.md
+include *.txt
+recursive-include cranberry/templates *
+global-exclude *.pyc
