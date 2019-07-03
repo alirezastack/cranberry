@@ -7,7 +7,8 @@ import datetime
 class AccessTokenSchema(Schema):
     class Meta:
         # Tuple or list of fields to include in the serialized result
-        fields = ("_id", "client_id", "access_token", "refresh_token", "expires_in", "user_id", "scope", "grant_type", "created_at")
+        fields = ("_id", "client_id", "access_token", "refresh_token", "expires_in", "user_id", "scope", "grant_type",
+                  "created_at")
         # exclude unknown fields from database on .load() call
         unknown = EXCLUDE
         datetimeformat = UTC_DATE_FORMAT

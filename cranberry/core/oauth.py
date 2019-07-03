@@ -80,7 +80,7 @@ class CranberryService(zoodroom_pb2_grpc.CranberryServiceServicer):
                     'details': ujson.dumps([12, 13, 14])
                 }
             )
-        except ClientNotFound as cnf:
+        except ClientNotFound:
             self.app.log.error('Client Not Found: {}'.format(traceback.format_exc()))
             return zoodroom_pb2.ResourceOwnerPasswordCredentialResponse(
                 error={
@@ -89,7 +89,7 @@ class CranberryService(zoodroom_pb2_grpc.CranberryServiceServicer):
                     'details': ujson.dumps([])
                 }
             )
-        except Exception as e:
+        except Exception:
             self.app.log.error('An error occurred: {}'.format(traceback.format_exc()))
             return zoodroom_pb2.ResourceOwnerPasswordCredentialResponse(
                 error={
@@ -156,7 +156,7 @@ class CranberryService(zoodroom_pb2_grpc.CranberryServiceServicer):
                     'details': ujson.dumps([12, 13, 14])
                 }
             )
-        except Exception as e:
+        except Exception:
             self.app.log.error('An error occurred: {}'.format(traceback.format_exc()))
             return zoodroom_pb2.CreateClientResponse(
                 error={
@@ -183,7 +183,7 @@ class CranberryService(zoodroom_pb2_grpc.CranberryServiceServicer):
                     expires_in_obj.strftime(UTC_DATE_FORMAT),
                     (datetime.datetime.utcnow() - expires_in_obj).days,
                     hours,
-                    remainder//60))
+                    remainder // 60))
                 return zoodroom_pb2.VerifyAccessTokenResponse(
                     error={
                         'code': 'invalid_token',
@@ -210,7 +210,7 @@ class CranberryService(zoodroom_pb2_grpc.CranberryServiceServicer):
                     'details': ujson.dumps([12, 13, 14])
                 }
             )
-        except AccessTokenNotFound as atnf:
+        except AccessTokenNotFound:
             self.app.log.error('token not found error:\r\n{}'.format(traceback.format_exc()))
             return zoodroom_pb2.VerifyAccessTokenResponse(
                 error={
@@ -219,7 +219,7 @@ class CranberryService(zoodroom_pb2_grpc.CranberryServiceServicer):
                     'details': ujson.dumps([])
                 }
             )
-        except Exception as e:
+        except Exception:
             self.app.log.error('An error occurred: {}'.format(traceback.format_exc()))
             return zoodroom_pb2.VerifyAccessTokenResponse(
                 error={

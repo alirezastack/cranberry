@@ -1,19 +1,4 @@
 from marshmallow import Schema, fields
-#
-#
-# class CartSchema(Schema):
-#     name = fields.Str(required=True)
-#     created_at = fields.DateTime()
-#     status = fields.Str()
-#
-#
-# out = CartSchema().load(dict(
-#     name=12,
-#     created_at='2018-12-12 12:22:10',
-#     status='failed'
-# ))
-# print(out)
-
 from marshmallow import ValidationError
 
 
