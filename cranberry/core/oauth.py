@@ -132,6 +132,7 @@ class CranberryService(zoodroom_pb2_grpc.CranberryServiceServicer):
                 'fullname': request.fullname,
                 'logo': request.logo,
                 'description': request.description,
+                'is_active': request.is_active,
             })
             self.app.log.info('client creation output: {}'.format(out))
 
