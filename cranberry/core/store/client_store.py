@@ -1,6 +1,6 @@
 from cranberry.core.models.client import ClientSchema
+from olive.exc import ClientNotFound, DuplicateClient
 from bson import ObjectId
-from olive.exc import ClientNotFound
 
 
 class ClientStore:
@@ -13,6 +13,10 @@ class ClientStore:
         # raise validation error on invalid data
         self.client_schema.load(data)
         clean_data = self.client_schema.dump(data)
+
+        if self.db.count({'client_id': data['client_id']}) >= 1:
+            raise DuplicateClient
+
         return self.db.save(clean_data)
 
     def get_client_by_id(self, client_id):

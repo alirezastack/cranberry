@@ -153,7 +153,7 @@ class CranberryService(zoodroom_pb2_grpc.CranberryServiceServicer):
                 error={
                     'code': 'invalid_schema',
                     'message': 'Given data is not valid!',
-                    'details': ujson.dumps([12, 13, 14])
+                    'details': ujson.dumps([])
                 }
             )
         except Exception as e:
@@ -207,7 +207,7 @@ class CranberryService(zoodroom_pb2_grpc.CranberryServiceServicer):
                 error={
                     'code': 'invalid_schema',
                     'message': 'Given data is not valid!',
-                    'details': ujson.dumps([12, 13, 14])
+                    'details': ujson.dumps([])
                 }
             )
         except AccessTokenNotFound as atnf:
