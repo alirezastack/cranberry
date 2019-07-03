@@ -14,7 +14,7 @@ class RefreshTokenStore:
         clean_data = self.refresh_token_schema.dump(data)
         return self.db.save(clean_data)
 
-    def get_cart_by_id(self, cart_id):
-        cart = self.db.find_one({'_id': ObjectId(cart_id)}, {'created_at': 0})
+    def get_by_id(self, token_id):
+        cart = self.db.find_one({'_id': ObjectId(token_id)}, {'created_at': 0})
         clean_data = self.refresh_token_schema.load(cart)
         return clean_data
