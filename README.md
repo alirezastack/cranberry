@@ -1,4 +1,4 @@
-# Amazing apppppp
+# Open Authentication 2.0 Service
 
 ## Installation
 
