@@ -17,10 +17,10 @@ class ClientSchema(Schema):
                            error_messages={'required': {'message': 'ClientID required', 'code': 400}})
     client_secret = fields.Str(required=True,
                                error_messages={'required': {'message': 'ClientSecret required', 'code': 400}})
-    redirection_uris = fields.List(fields.Str())
-    description = fields.Str()
+    redirection_uris = fields.List(fields.Str(), allow_none=True)
+    description = fields.Str(allow_none=True)
     fullname = fields.Str()
-    logo = fields.Str()
+    logo = fields.Str(allow_none=True)
     # dump_only: Fields to skip during deserialization(i.e.: .load())
     created_at = MarshmallowDateTimeField(dump_only=True,
                                           default=lambda: datetime.datetime.utcnow(),

@@ -24,6 +24,14 @@ class ClientStore:
         clean_data = self.client_schema.load(client)
         return clean_data
 
+    def get_client_by_client_id(self, client_id):
+        client = self.db.find_one({'client_id': client_id}, {'created_at': 0})
+        if not client:
+            raise ClientNotFound
+
+        clean_data = self.client_schema.load(client)
+        return clean_data
+
     def exists(self, client_id, client_secret):
         self.app.log.debug('checking if client: {} exists with client secret: ****'.format(client_id))
         if self.db.count({'client_id': client_id, 'client_secret': client_secret}) == 0:

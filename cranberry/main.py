@@ -1,6 +1,6 @@
-from cranberry.core.store.client_store import ClientStore
 from cranberry.core.store.refresh_token_store import RefreshTokenStore
 from cranberry.core.store.access_token_store import AccessTokenStore
+from cranberry.core.store.client_store import ClientStore
 from olive.store.mongo_connection import MongoConnection
 from olive.proto.rpc_server import GRPCServerBase
 from cranberry.core.oauth import CranberryService

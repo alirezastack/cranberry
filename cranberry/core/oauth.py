@@ -228,3 +228,53 @@ class CranberryService(zoodroom_pb2_grpc.CranberryServiceServicer):
                     'details': ujson.dumps([])
                 }
             )
+
+    def GetClientByClientId(self, request, context):
+        try:
+            self.app.log.debug('getting client {}'.format(request.client_id))
+            client = self.client_store.get_client_by_client_id(client_id=request.client_id)
+            self.app.log.debug('client information: {}'.format(client))
+            return zoodroom_pb2.GetClientByClientIdResponse(
+                client_id=request.client_id,
+                client_secret=client['client_secret'],
+                redirection_uris=client['redirection_uris'],
+                fullname=client['fullname'],
+                logo=client['logo'],
+                description=client['description']
+            )
+        except ClientNotFound as cnf:
+            self.app.log.error('Client Not Found: {}'.format(traceback.format_exc()))
+            return zoodroom_pb2.GetClientByClientIdResponse(
+                error={
+                    'code': 'client_not_found',
+                    'message': 'Client Not found!',
+                    'details': ujson.dumps([])
+                }
+            )
+        except ValueError as ve:
+            self.app.log.error('Schema value error:\r\n{}'.format(traceback.format_exc()))
+            return zoodroom_pb2.GetClientByClientIdResponse(
+                error={
+                    'code': 'value_error',
+                    'message': str(ve),
+                    'details': ujson.dumps([])
+                }
+            )
+        except ValidationError as ve:
+            self.app.log.error('Schema validation error:\r\n{}'.format(ve.messages))
+            return zoodroom_pb2.GetClientByClientIdResponse(
+                error={
+                    'code': 'invalid_schema',
+                    'message': 'Given data is not valid!',
+                    'details': ujson.dumps([])
+                }
+            )
+        except Exception as e:
+            self.app.log.error('An error occurred: {}'.format(traceback.format_exc()))
+            return zoodroom_pb2.GetClientByClientIdResponse(
+                error={
+                    'code': 'server_error',
+                    'message': 'Server is in maintenance mode',
+                    'details': ujson.dumps([])
+                }
+            )
