@@ -1,13 +1,12 @@
-import datetime
-
-from olive.consts import UTC_DATE_FORMAT
+from olive.exc import ClientNotFound, AccessTokenNotFound
 from olive.proto import zoodroom_pb2_grpc, zoodroom_pb2
 from olive.authentication import Authentication
-from olive.exc import ClientNotFound, AccessTokenNotFound
+from olive.consts import UTC_DATE_FORMAT
 from marshmallow import ValidationError
-import traceback
-import ujson
 from olive.validation import Validation
+import traceback
+import datetime
+import ujson
 
 
 class CranberryService(zoodroom_pb2_grpc.CranberryServiceServicer):
@@ -28,6 +27,7 @@ class CranberryService(zoodroom_pb2_grpc.CranberryServiceServicer):
             # TODO authenticate user in the future -> user.authenticate_user & user.get_user_by_username
             # TODO suppose it is Authenticated by now and fetch user data
             user_id = 'A-SAMPLE-USER-ID'
+
             auth = Authentication()
             access_token_payload = {
                 'client_id': request.client_id,
@@ -39,17 +39,22 @@ class CranberryService(zoodroom_pb2_grpc.CranberryServiceServicer):
                 'grant_type': 'password'
             }
 
+            self.app.log.debug('saving access token:\n{}'.format(access_token_payload))
             access_token_id = self.access_token_store.save(access_token_payload)
             self.app.log.debug('access-token has been saved successfully: {}'.format(access_token_id))
 
-            # Set a cached value
-            self.app.log.debug('cache data in redis')
-            self.app.cache.set('my_key', 'my value')
+            refresh_token_payload = {
+                'client_id': request.client_id,
+                'refresh_token': access_token_payload['refresh_token'],
+                'expires_in': self.expires_in,
+                'user_id': user_id,
+                'scope': request.scope.split(','),
+                'grant_type': 'password'
+            }
 
-            # TODO save refresh token too
-
-            # res = self.access_token_store.get_access_token_by_id(token_id=str(access_token_id))
-            # self.app.log.debug(res)
+            self.app.log.debug('saving refresh token:\n{}'.format(refresh_token_payload))
+            refresh_token_id = self.refresh_token_store.save(refresh_token_payload)
+            self.app.log.debug('refresh token has been saved successfully: {}'.format(refresh_token_id))
 
             return zoodroom_pb2.ResourceOwnerPasswordCredentialResponse(
                 access_token=access_token_payload['access_token'],

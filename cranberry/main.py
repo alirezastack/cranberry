@@ -58,7 +58,8 @@ class CranberryApp(App):
         self.log.info('current service name: ' + self._meta.label)
 
         # Set a cached value
-        self.cache.set(key='my_key', value='my value', time=20)
+        # TODO use cache where its needed
+        # self.cache.set(key='my_key', value='my value', time=20)
 
         # Passing self for app is suggested by Cement Core Developer:
         #   - https://github.com/datafolklabs/cement/issues/566
