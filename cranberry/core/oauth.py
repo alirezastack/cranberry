@@ -4,6 +4,7 @@ from olive.authentication import Authentication
 from olive.consts import UTC_DATE_FORMAT
 from marshmallow import ValidationError
 from olive.validation import Validation
+from olive.proto.rpc import Response
 import traceback
 import datetime
 import ujson
@@ -56,7 +57,7 @@ class CranberryService(zoodroom_pb2_grpc.CranberryServiceServicer):
             refresh_token_id = self.refresh_token_store.save(refresh_token_payload)
             self.app.log.debug('refresh token has been saved successfully: {}'.format(refresh_token_id))
 
-            return zoodroom_pb2.ResourceOwnerPasswordCredentialResponse(
+            return Response.message(
                 access_token=access_token_payload['access_token'],
                 refresh_token=access_token_payload['refresh_token'],
                 expires_in=self.expires_in,
@@ -64,7 +65,7 @@ class CranberryService(zoodroom_pb2_grpc.CranberryServiceServicer):
             )
         except ValueError as ve:
             self.app.log.error('Schema value error:\r\n{}'.format(traceback.format_exc()))
-            return zoodroom_pb2.ResourceOwnerPasswordCredentialResponse(
+            return Response.message(
                 error={
                     'code': 'value_error',
                     'message': str(ve),
@@ -73,7 +74,7 @@ class CranberryService(zoodroom_pb2_grpc.CranberryServiceServicer):
             )
         except ValidationError as ve:
             self.app.log.error('Schema validation error:\r\n{}'.format(ve.messages))
-            return zoodroom_pb2.ResourceOwnerPasswordCredentialResponse(
+            return Response.message(
                 error={
                     'code': 'invalid_schema',
                     'message': 'Given data is not valid!',
@@ -82,7 +83,7 @@ class CranberryService(zoodroom_pb2_grpc.CranberryServiceServicer):
             )
         except ClientNotFound:
             self.app.log.error('Client Not Found: {}'.format(traceback.format_exc()))
-            return zoodroom_pb2.ResourceOwnerPasswordCredentialResponse(
+            return Response.message(
                 error={
                     'code': 'client_not_found',
                     'message': 'Client Not found!',
@@ -91,7 +92,7 @@ class CranberryService(zoodroom_pb2_grpc.CranberryServiceServicer):
             )
         except Exception:
             self.app.log.error('An error occurred: {}'.format(traceback.format_exc()))
-            return zoodroom_pb2.ResourceOwnerPasswordCredentialResponse(
+            return Response.message(
                 error={
                     'code': 'server_error',
                     'message': 'Server is in maintenance mode',
@@ -101,23 +102,21 @@ class CranberryService(zoodroom_pb2_grpc.CranberryServiceServicer):
 
     def CreateClient(self, request, context):
         try:
-            self.app.log.debug('checking whether client {} exists...'.format(request.client_id))
             try:
                 self.client_store.is_client_id_exists(client_id=request.client_id)
-                return zoodroom_pb2.CreateClientResponse(
+                return Response.message(
                     error={
                         'code': 'client_exists',
                         'message': 'Client {} is duplicate'.format(request.client_id),
                         'details': ujson.dumps([request.client_id])
-                    }
-                )
+                    })
             except ClientNotFound:
                 self.app.log.info('client id {} is free for registration'.format(request.client_id))
 
             self.app.log.debug('verifying URL schemes')
             for url in request.redirection_uris:
                 if not Validation.is_url_valid(url):
-                    return zoodroom_pb2.CreateClientResponse(
+                    return Response.message(
                         error={
                             'code': 'invalid_redirection_uri',
                             'message': 'Redirection URI {} is not valid!'.format(url),
@@ -136,12 +135,12 @@ class CranberryService(zoodroom_pb2_grpc.CranberryServiceServicer):
             })
             self.app.log.info('client creation output: {}'.format(out))
 
-            return zoodroom_pb2.CreateClientResponse(
+            return Response.message(
                 created=True
             )
         except ValueError as ve:
             self.app.log.error('Schema value error:\r\n{}'.format(traceback.format_exc()))
-            return zoodroom_pb2.CreateClientResponse(
+            return Response.message(
                 error={
                     'code': 'value_error',
                     'message': str(ve),
@@ -150,7 +149,7 @@ class CranberryService(zoodroom_pb2_grpc.CranberryServiceServicer):
             )
         except ValidationError as ve:
             self.app.log.error('Schema validation error:\r\n{}'.format(ve.messages))
-            return zoodroom_pb2.CreateClientResponse(
+            return Response.message(
                 error={
                     'code': 'invalid_schema',
                     'message': 'Given data is not valid!',
@@ -159,7 +158,7 @@ class CranberryService(zoodroom_pb2_grpc.CranberryServiceServicer):
             )
         except Exception:
             self.app.log.error('An error occurred: {}'.format(traceback.format_exc()))
-            return zoodroom_pb2.CreateClientResponse(
+            return Response.message(
                 error={
                     'code': 'server_error',
                     'message': 'Server is in maintenance mode',
@@ -185,17 +184,17 @@ class CranberryService(zoodroom_pb2_grpc.CranberryServiceServicer):
                     (datetime.datetime.utcnow() - expires_in_obj).days,
                     hours,
                     remainder // 60))
-                return zoodroom_pb2.VerifyAccessTokenResponse(
+                return Response.message(
                     error={
                         'code': 'invalid_token',
                         'message': 'The access token provided is expired, revoked or malformed.'
                     }
                 )
 
-            return zoodroom_pb2.VerifyAccessTokenResponse()
+            return Response.message()
         except ValueError as ve:
             self.app.log.error('Schema value error:\r\n{}'.format(traceback.format_exc()))
-            return zoodroom_pb2.VerifyAccessTokenResponse(
+            return Response.message(
                 error={
                     'code': 'value_error',
                     'message': str(ve),
@@ -204,7 +203,7 @@ class CranberryService(zoodroom_pb2_grpc.CranberryServiceServicer):
             )
         except ValidationError as ve:
             self.app.log.error('Schema validation error:\r\n{}'.format(ve.messages))
-            return zoodroom_pb2.VerifyAccessTokenResponse(
+            return Response.message(
                 error={
                     'code': 'invalid_schema',
                     'message': 'Given data is not valid!',
@@ -213,7 +212,7 @@ class CranberryService(zoodroom_pb2_grpc.CranberryServiceServicer):
             )
         except AccessTokenNotFound:
             self.app.log.error('token not found error:\r\n{}'.format(traceback.format_exc()))
-            return zoodroom_pb2.VerifyAccessTokenResponse(
+            return Response.message(
                 error={
                     'code': 'invalid_token',
                     'message': 'The access token provided is expired, revoked or malformed.',
@@ -222,7 +221,7 @@ class CranberryService(zoodroom_pb2_grpc.CranberryServiceServicer):
             )
         except Exception:
             self.app.log.error('An error occurred: {}'.format(traceback.format_exc()))
-            return zoodroom_pb2.VerifyAccessTokenResponse(
+            return Response.message(
                 error={
                     'code': 'server_error',
                     'message': 'Server is in maintenance mode',
@@ -235,7 +234,7 @@ class CranberryService(zoodroom_pb2_grpc.CranberryServiceServicer):
             self.app.log.debug('getting client {}'.format(request.client_id))
             client = self.client_store.get_client_by_client_id(client_id=request.client_id)
             self.app.log.debug('client information: {}'.format(client))
-            return zoodroom_pb2.GetClientByClientIdResponse(
+            return Response.message(
                 client_id=request.client_id,
                 client_secret=client['client_secret'],
                 redirection_uris=client['redirection_uris'],
@@ -245,7 +244,7 @@ class CranberryService(zoodroom_pb2_grpc.CranberryServiceServicer):
             )
         except ClientNotFound as cnf:
             self.app.log.error('Client Not Found: {}'.format(traceback.format_exc()))
-            return zoodroom_pb2.GetClientByClientIdResponse(
+            return Response.message(
                 error={
                     'code': 'client_not_found',
                     'message': 'Client Not found!',
@@ -254,7 +253,7 @@ class CranberryService(zoodroom_pb2_grpc.CranberryServiceServicer):
             )
         except ValueError as ve:
             self.app.log.error('Schema value error:\r\n{}'.format(traceback.format_exc()))
-            return zoodroom_pb2.GetClientByClientIdResponse(
+            return Response.message(
                 error={
                     'code': 'value_error',
                     'message': str(ve),
@@ -263,7 +262,7 @@ class CranberryService(zoodroom_pb2_grpc.CranberryServiceServicer):
             )
         except ValidationError as ve:
             self.app.log.error('Schema validation error:\r\n{}'.format(ve.messages))
-            return zoodroom_pb2.GetClientByClientIdResponse(
+            return Response.message(
                 error={
                     'code': 'invalid_schema',
                     'message': 'Given data is not valid!',
@@ -272,7 +271,7 @@ class CranberryService(zoodroom_pb2_grpc.CranberryServiceServicer):
             )
         except Exception as e:
             self.app.log.error('An error occurred: {}'.format(traceback.format_exc()))
-            return zoodroom_pb2.GetClientByClientIdResponse(
+            return Response.message(
                 error={
                     'code': 'server_error',
                     'message': 'Server is in maintenance mode',

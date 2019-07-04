@@ -2,10 +2,10 @@ from cranberry.core.store.refresh_token_store import RefreshTokenStore
 from cranberry.core.store.access_token_store import AccessTokenStore
 from cranberry.core.store.client_store import ClientStore
 from olive.store.mongo_connection import MongoConnection
-from olive.proto.rpc_server import GRPCServerBase
 from cranberry.core.oauth import CranberryService
 from cranberry.controllers.base import Base
 from olive.exc import CranberryServiceError
+from olive.proto.rpc import GRPCServerBase
 from olive.proto import zoodroom_pb2_grpc
 from cement.core.exc import CaughtSignal
 from cement import App, TestApp
