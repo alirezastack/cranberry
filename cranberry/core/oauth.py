@@ -1,6 +1,6 @@
 from olive.exc import ClientNotFound, AccessTokenNotFound
-from olive.proto import zoodroom_pb2_grpc, zoodroom_pb2
 from olive.authentication import Authentication
+from olive.proto import zoodroom_pb2_grpc
 from olive.consts import UTC_DATE_FORMAT
 from marshmallow import ValidationError
 from olive.validation import Validation
@@ -242,7 +242,7 @@ class CranberryService(zoodroom_pb2_grpc.CranberryServiceServicer):
                 logo=client['logo'],
                 description=client['description']
             )
-        except ClientNotFound as cnf:
+        except ClientNotFound:
             self.app.log.error('Client Not Found: {}'.format(traceback.format_exc()))
             return Response.message(
                 error={
@@ -269,7 +269,7 @@ class CranberryService(zoodroom_pb2_grpc.CranberryServiceServicer):
                     'details': ujson.dumps([])
                 }
             )
-        except Exception as e:
+        except Exception:
             self.app.log.error('An error occurred: {}'.format(traceback.format_exc()))
             return Response.message(
                 error={
