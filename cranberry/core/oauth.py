@@ -10,7 +10,6 @@ from olive.validation import Validation
 from olive.proto.rpc import Response
 import traceback
 import datetime
-import ujson
 
 
 class CranberryService(zoodroom_pb2_grpc.CranberryServiceServicer):
@@ -40,7 +39,7 @@ class CranberryService(zoodroom_pb2_grpc.CranberryServiceServicer):
                 'refresh_token': auth.generate_token(user_id),
                 'expires_in': self.expires_in,
                 'user_id': user_id,
-                'scope': request.scope.split(','),
+                'scope': list(request.scope),
                 'grant_type': 'password'
             }
 
@@ -53,7 +52,7 @@ class CranberryService(zoodroom_pb2_grpc.CranberryServiceServicer):
                 'refresh_token': access_token_payload['refresh_token'],
                 'expires_in': self.expires_in,
                 'user_id': user_id,
-                'scope': request.scope.split(','),
+                'scope': list(request.scope),
                 'grant_type': 'password'
             }
 
@@ -73,7 +72,7 @@ class CranberryService(zoodroom_pb2_grpc.CranberryServiceServicer):
                 error={
                     'code': 'value_error',
                     'message': str(ve),
-                    'details': ujson.dumps([])
+                    'details': []
                 }
             )
         except ValidationError as ve:
@@ -82,7 +81,7 @@ class CranberryService(zoodroom_pb2_grpc.CranberryServiceServicer):
                 error={
                     'code': 'invalid_schema',
                     'message': 'Given data is not valid!',
-                    'details': ujson.dumps([12, 13, 14])
+                    'details': []
                 }
             )
         except ClientNotFound:
@@ -91,7 +90,7 @@ class CranberryService(zoodroom_pb2_grpc.CranberryServiceServicer):
                 error={
                     'code': 'client_not_found',
                     'message': 'Client Not found!',
-                    'details': ujson.dumps([])
+                    'details': []
                 }
             )
         except Exception:
@@ -100,7 +99,7 @@ class CranberryService(zoodroom_pb2_grpc.CranberryServiceServicer):
                 error={
                     'code': 'server_error',
                     'message': 'Server is in maintenance mode',
-                    'details': ujson.dumps([])
+                    'details': []
                 }
             )
 
@@ -112,7 +111,7 @@ class CranberryService(zoodroom_pb2_grpc.CranberryServiceServicer):
                     error={
                         'code': 'client_exists',
                         'message': 'Client {} is duplicate'.format(request.client_id),
-                        'details': ujson.dumps([request.client_id])
+                        'details': [request.client_id]
                     })
             except ClientNotFound:
                 self.app.log.info('client id {} is free for registration'.format(request.client_id))
@@ -124,7 +123,7 @@ class CranberryService(zoodroom_pb2_grpc.CranberryServiceServicer):
                         error={
                             'code': 'invalid_redirection_uri',
                             'message': 'Redirection URI {} is not valid!'.format(url),
-                            'details': ujson.dumps([url])
+                            'details': [url]
                         }
                     )
 
@@ -148,7 +147,7 @@ class CranberryService(zoodroom_pb2_grpc.CranberryServiceServicer):
                 error={
                     'code': 'value_error',
                     'message': str(ve),
-                    'details': ujson.dumps([])
+                    'details': []
                 }
             )
         except ValidationError as ve:
@@ -157,7 +156,7 @@ class CranberryService(zoodroom_pb2_grpc.CranberryServiceServicer):
                 error={
                     'code': 'invalid_schema',
                     'message': 'Given data is not valid!',
-                    'details': ujson.dumps([])
+                    'details': []
                 }
             )
         except Exception:
@@ -166,7 +165,7 @@ class CranberryService(zoodroom_pb2_grpc.CranberryServiceServicer):
                 error={
                     'code': 'server_error',
                     'message': 'Server is in maintenance mode',
-                    'details': ujson.dumps([])
+                    'details': []
                 }
             )
 
@@ -202,7 +201,7 @@ class CranberryService(zoodroom_pb2_grpc.CranberryServiceServicer):
                 error={
                     'code': 'value_error',
                     'message': str(ve),
-                    'details': ujson.dumps([])
+                    'details': []
                 }
             )
         except ValidationError as ve:
@@ -211,7 +210,7 @@ class CranberryService(zoodroom_pb2_grpc.CranberryServiceServicer):
                 error={
                     'code': 'invalid_schema',
                     'message': 'Given data is not valid!',
-                    'details': ujson.dumps([])
+                    'details': []
                 }
             )
         except AccessTokenNotFound:
@@ -220,7 +219,7 @@ class CranberryService(zoodroom_pb2_grpc.CranberryServiceServicer):
                 error={
                     'code': 'invalid_token',
                     'message': 'The access token provided is expired, revoked or malformed.',
-                    'details': ujson.dumps([])
+                    'details': []
                 }
             )
         except Exception:
@@ -229,7 +228,7 @@ class CranberryService(zoodroom_pb2_grpc.CranberryServiceServicer):
                 error={
                     'code': 'server_error',
                     'message': 'Server is in maintenance mode',
-                    'details': ujson.dumps([])
+                    'details': []
                 }
             )
 
@@ -252,7 +251,7 @@ class CranberryService(zoodroom_pb2_grpc.CranberryServiceServicer):
                 error={
                     'code': 'client_not_found',
                     'message': 'Client Not found!',
-                    'details': ujson.dumps([])
+                    'details': []
                 }
             )
         except ValueError as ve:
@@ -261,7 +260,7 @@ class CranberryService(zoodroom_pb2_grpc.CranberryServiceServicer):
                 error={
                     'code': 'value_error',
                     'message': str(ve),
-                    'details': ujson.dumps([])
+                    'details': []
                 }
             )
         except ValidationError as ve:
@@ -270,7 +269,7 @@ class CranberryService(zoodroom_pb2_grpc.CranberryServiceServicer):
                 error={
                     'code': 'invalid_schema',
                     'message': 'Given data is not valid!',
-                    'details': ujson.dumps([])
+                    'details': []
                 }
             )
         except Exception:
@@ -279,6 +278,6 @@ class CranberryService(zoodroom_pb2_grpc.CranberryServiceServicer):
                 error={
                     'code': 'server_error',
                     'message': 'Server is in maintenance mode',
-                    'details': ujson.dumps([])
+                    'details': []
                 }
             )
