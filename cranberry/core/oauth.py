@@ -1,3 +1,6 @@
+from olive.proto.zoodroom_pb2 import ResourceOwnerPasswordCredentialResponse, ResourceOwnerPasswordCredentialRequest, \
+    CreateClientRequest, CreateClientResponse, VerifyAccessTokenRequest, VerifyAccessTokenResponse, \
+    GetClientByClientIdRequest, GetClientByClientIdResponse
 from olive.exc import ClientNotFound, AccessTokenNotFound
 from olive.authentication import Authentication
 from olive.proto import zoodroom_pb2_grpc
@@ -18,7 +21,8 @@ class CranberryService(zoodroom_pb2_grpc.CranberryServiceServicer):
         self.app = app
         self.expires_in = app.config['cranberry']['oauth']['expires_in']
 
-    def ResourceOwnerPasswordCredential(self, request, context):
+    def ResourceOwnerPasswordCredential(self, request: ResourceOwnerPasswordCredentialRequest, context) \
+            -> ResourceOwnerPasswordCredentialResponse:
         try:
             self.app.log.debug('validating client {}'.format(request.client_id))
             self.client_store.exists(client_id=request.client_id,
@@ -100,7 +104,7 @@ class CranberryService(zoodroom_pb2_grpc.CranberryServiceServicer):
                 }
             )
 
-    def CreateClient(self, request, context):
+    def CreateClient(self, request: CreateClientRequest, context) -> CreateClientResponse:
         try:
             try:
                 self.client_store.is_client_id_exists(client_id=request.client_id)
@@ -166,7 +170,7 @@ class CranberryService(zoodroom_pb2_grpc.CranberryServiceServicer):
                 }
             )
 
-    def VerifyAccessToken(self, request, context):
+    def VerifyAccessToken(self, request: VerifyAccessTokenRequest, context) -> VerifyAccessTokenResponse:
         try:
             self.app.log.debug('getting token {} for client {}...'.format(request.access_token, request.client_id))
             token = self.access_token_store.get_one(client_id=request.client_id,
@@ -229,7 +233,7 @@ class CranberryService(zoodroom_pb2_grpc.CranberryServiceServicer):
                 }
             )
 
-    def GetClientByClientId(self, request, context):
+    def GetClientByClientId(self, request: GetClientByClientIdRequest, context) -> GetClientByClientIdResponse:
         try:
             self.app.log.debug('getting client {}'.format(request.client_id))
             client = self.client_store.get_client_by_client_id(client_id=request.client_id)

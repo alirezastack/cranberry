@@ -3,7 +3,7 @@ from cranberry.main import CranberryAppTest
 
 def test_cranberry():
     # test cranberry without any subcommands or arguments
-    with CranberryAppTest() as app:
+    with CranberryAppTest(config_files=['/etc/cranberry/cranberry.yml']) as app:
         app.run()
         assert app.exit_code == 0
 
