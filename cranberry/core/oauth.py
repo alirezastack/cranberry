@@ -1,6 +1,6 @@
 from olive.proto.zoodroom_pb2 import ResourceOwnerPasswordCredentialResponse, ResourceOwnerPasswordCredentialRequest, \
     CreateClientRequest, CreateClientResponse, VerifyAccessTokenRequest, VerifyAccessTokenResponse, \
-    GetClientByClientIdRequest, GetClientByClientIdResponse
+    GetClientByClientIdRequest, GetClientByClientIdResponse, RefreshTokenRequest, RefreshTokenResponse
 from olive.exc import ClientNotFound, AccessTokenNotFound
 from olive.authentication import Authentication
 from olive.proto import zoodroom_pb2_grpc
@@ -254,6 +254,37 @@ class CranberryService(zoodroom_pb2_grpc.CranberryServiceServicer):
                     'details': []
                 }
             )
+        except ValueError as ve:
+            self.app.log.error('Schema value error:\r\n{}'.format(traceback.format_exc()))
+            return Response.message(
+                error={
+                    'code': 'value_error',
+                    'message': str(ve),
+                    'details': []
+                }
+            )
+        except ValidationError as ve:
+            self.app.log.error('Schema validation error:\r\n{}'.format(ve.messages))
+            return Response.message(
+                error={
+                    'code': 'invalid_schema',
+                    'message': 'Given data is not valid!',
+                    'details': []
+                }
+            )
+        except Exception:
+            self.app.log.error('An error occurred: {}'.format(traceback.format_exc()))
+            return Response.message(
+                error={
+                    'code': 'server_error',
+                    'message': 'Server is in maintenance mode',
+                    'details': []
+                }
+            )
+
+    def RefreshToken(self, request: RefreshTokenRequest, context) -> RefreshTokenResponse:
+        try:
+            raise NotImplemented
         except ValueError as ve:
             self.app.log.error('Schema value error:\r\n{}'.format(traceback.format_exc()))
             return Response.message(
