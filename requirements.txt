@@ -3,12 +3,11 @@ pyyaml
 colorlog
 pymongo==3.8.0
 redis==3.2.1
-marshmallow==3.0.0rc6
+marshmallow==3.0.0rc9
 ujson==1.35
 
-grpcio==1.20.1
-grpcio-tools==1.20.1
-protobuf==3.7.1
-
+grpcio==1.22.0
+grpcio-tools==1.22.0
+protobuf==3.9.0
 
 -e git+https://oauth2:Q8HLiBk95Rkqzy2Q7Kgh@git.zoodroom.com/basket/olive.git@master#egg=olive
