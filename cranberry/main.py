@@ -47,6 +47,7 @@ class CranberryApp(App):
         ]
 
     def run(self):
+        expires_in = int(self.config['cranberry']['oauth']['expires_in'])
         mongodb_cfg = self.config['cranberry']['mongodb']
         self.log.debug('initiating MongoDB configuration...')
         mongo = MongoConnection(mongodb_cfg, self)
@@ -57,28 +58,26 @@ class CranberryApp(App):
         client_store = ClientStore(target_database.oauth_client, self)
         self.log.info('current service name: ' + self._meta.label)
 
-        # Set a cached value
-        # TODO use cache where its needed
-        # self.cache.set(key='my_key', value='my value', time=20)
-
         # Passing self for app is suggested by Cement Core Developer:
         #   - https://github.com/datafolklabs/cement/issues/566
         cs = CranberryServer(service_name=self._meta.label,
                              access_token_store=access_token_store,
                              refresh_token_store=refresh_token_store,
                              client_store=client_store,
+                             expires_in=expires_in,
                              app=self)
         cs.start()
 
 
 class CranberryServer(GRPCServerBase):
-    def __init__(self, service_name, access_token_store, refresh_token_store, client_store, app):
+    def __init__(self, service_name, access_token_store, refresh_token_store, client_store, expires_in, app):
         super(CranberryServer, self).__init__(service=service_name, app=app)
 
         # add class to gRPC server
         service = CranberryService(access_token_store=access_token_store,
                                    refresh_token_store=refresh_token_store,
                                    client_store=client_store,
+                                   expires_in=expires_in,
                                    app=app)
         # adds a CranberryService to a gRPC.Server
         zoodroom_pb2_grpc.add_CranberryServiceServicer_to_server(service, self.server)

@@ -13,12 +13,12 @@ import datetime
 
 
 class CranberryService(zoodroom_pb2_grpc.CranberryServiceServicer):
-    def __init__(self, access_token_store, refresh_token_store, client_store, app):
+    def __init__(self, access_token_store, refresh_token_store, client_store, expires_in, app):
         self.access_token_store = access_token_store
         self.refresh_token_store = refresh_token_store
         self.client_store = client_store
         self.app = app
-        self.expires_in = app.config['cranberry']['oauth']['expires_in']
+        self.expires_in = expires_in
 
     def ResourceOwnerPasswordCredential(self, request: ResourceOwnerPasswordCredentialRequest, context) \
             -> ResourceOwnerPasswordCredentialResponse:
@@ -31,6 +31,9 @@ class CranberryService(zoodroom_pb2_grpc.CranberryServiceServicer):
             # TODO authenticate user in the future -> user.authenticate_user & user.get_user_by_username
             # TODO suppose it is Authenticated by now and fetch user data
             user_id = 'A-SAMPLE-USER-ID'
+            scopes = ['list-of-user-permissions', 'fetched-from-apple']
+
+            # TODO if user scope changes by admin, user's tokens should be purged by apple -> VoidUserTokens
 
             auth = Authentication()
             access_token_payload = {
@@ -39,7 +42,7 @@ class CranberryService(zoodroom_pb2_grpc.CranberryServiceServicer):
                 'refresh_token': auth.generate_token(user_id),
                 'expires_in': self.expires_in,
                 'user_id': user_id,
-                'scope': list(request.scope),
+                'scope': scopes,
                 'grant_type': 'password'
             }
 
@@ -52,7 +55,7 @@ class CranberryService(zoodroom_pb2_grpc.CranberryServiceServicer):
                 'refresh_token': access_token_payload['refresh_token'],
                 'expires_in': self.expires_in,
                 'user_id': user_id,
-                'scope': list(request.scope),
+                'scope': scopes,
                 'grant_type': 'password'
             }
 
@@ -64,7 +67,7 @@ class CranberryService(zoodroom_pb2_grpc.CranberryServiceServicer):
                 access_token=access_token_payload['access_token'],
                 refresh_token=access_token_payload['refresh_token'],
                 expires_in=self.expires_in,
-                scope=request.scope
+                scope=scopes
             )
         except ValueError as ve:
             self.app.log.error('Schema value error:\r\n{}'.format(traceback.format_exc()))
