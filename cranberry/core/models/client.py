@@ -1,4 +1,4 @@
-from cranberry.core.utils import MarshmallowDateTimeField
+from olive.toolbox import MarshmallowDateTimeField
 from marshmallow import Schema, fields, EXCLUDE
 from olive.consts import UTC_DATE_FORMAT
 import datetime
