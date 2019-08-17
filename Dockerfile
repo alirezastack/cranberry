@@ -1,5 +1,7 @@
-FROM python:3.6-alpine
+FROM registry.git.zoodroom.com/basket/fertilizer:latest
+
 MAINTAINER Sayyed Alireza Hoseini <alireza.hosseini@zoodroom.com>
+
 ENV PS1="\[\e[0;33m\]|> cranberry <| \[\e[1;35m\]\W\[\e[0m\] \[\e[0m\]# "
 
 WORKDIR /src

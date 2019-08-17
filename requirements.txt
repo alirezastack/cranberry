@@ -10,4 +10,4 @@ grpcio==1.22.0
 grpcio-tools==1.22.0
 protobuf==3.9.0
 
--e git+https://oauth2:Q8HLiBk95Rkqzy2Q7Kgh@git.zoodroom.com/basket/olive.git@master#egg=olive
+-e git+https://deploy-token-olive:Gei1gXTWR_9HoUhXYeoM@git.zoodroom.com/basket/olive.git@master#egg=olive
