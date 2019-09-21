@@ -1,12 +1,13 @@
 from cranberry.core.store.refresh_token_store import RefreshTokenStore
 from cranberry.core.store.access_token_store import AccessTokenStore
+from olive.proto import zoodroom_pb2_grpc, health_pb2_grpc
 from cranberry.core.store.client_store import ClientStore
 from olive.store.mongo_connection import MongoConnection
 from cranberry.core.oauth import CranberryService
+from olive.proto.health import HealthService
 from cranberry.controllers.base import Base
 from olive.exc import CranberryServiceError
 from olive.proto.rpc import GRPCServerBase
-from olive.proto import zoodroom_pb2_grpc
 from cement.core.exc import CaughtSignal
 from cement import App, TestApp
 
@@ -79,8 +80,11 @@ class CranberryServer(GRPCServerBase):
                                    client_store=client_store,
                                    expires_in=expires_in,
                                    app=app)
+        health_service = HealthService(app=app)
+
         # adds a CranberryService to a gRPC.Server
         zoodroom_pb2_grpc.add_CranberryServiceServicer_to_server(service, self.server)
+        health_pb2_grpc.add_HealthServicer_to_server(health_service, self.server)
 
 
 class CranberryAppTest(TestApp, CranberryApp):
