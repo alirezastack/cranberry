@@ -4,7 +4,7 @@ colorlog
 pymongo==3.8.0
 redis==3.2.1
 marshmallow==3.0.0rc9
-ujson==1.35
+ujson==5.2.0
 
 grpcio==1.22.0
 grpcio-tools==1.22.0
