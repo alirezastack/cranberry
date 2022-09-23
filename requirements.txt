@@ -8,6 +8,6 @@ ujson==1.35
 
 grpcio==1.22.0
 grpcio-tools==1.22.0
-protobuf==3.9.0
+protobuf==3.18.3
 
 -e git+https://deploy-token-olive:Gei1gXTWR_9HoUhXYeoM@git.zoodroom.com/basket/olive.git@master#egg=olive
