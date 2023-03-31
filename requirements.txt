@@ -2,7 +2,7 @@ cement==3.0.2
 pyyaml
 colorlog
 pymongo==3.8.0
-redis==3.2.1
+redis==4.4.4
 marshmallow==3.0.0rc9
 ujson==1.35
 
